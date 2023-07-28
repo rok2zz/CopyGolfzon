@@ -1,39 +1,64 @@
 import React, { useRef, useState } from "react"
-import { ActivityIndicator, Keyboard, Pressable, TextInput } from "react-native"
+import { ActivityIndicator, Alert, Keyboard, Pressable, TextInput } from "react-native"
 import { KeyboardAvoidingView, SafeAreaView, StyleSheet, Text, View } from "react-native"
-import { User, register } from "../../../../lib/users"
-import { RadioButton } from 'react-native-paper'
+import { useNavigation } from "@react-navigation/native"
+import { AuthStackNavigationProp } from "../../../../types/types"
+import { User } from "../../../../lib/types"
+import { useUsers } from "../../../../hooks/useUsers"
 
 interface ChangeTextHandler {
 	(value: string): void
 }
 
 function Register(): JSX.Element {
+    const navigation = useNavigation<AuthStackNavigationProp>()
 	const passwordRef = useRef<TextInput>(null)
-	const nameRef = useRef<TextInput>(null)
 	const nicknameRef = useRef<TextInput>(null)
 	const emailRef = useRef<TextInput>(null)
-    const [loading, setLoading] = useState(false)
+    const { isLoading, register } = useUsers()
     const [user, setUser] = useState<User>({
         userID: '',
         userPW: '',
-        name: '',
         nickname: ''
     })
 
     const onPressRegister = (): void => {
         Keyboard.dismiss()
 
-        setLoading(true)
-        register(user)
-        setLoading(false)
+        if (user.userID == "" || user.userPW == "" || user.nickname == "") {
+            return Alert.alert("필수 항목을 입력해주세요.")
+        }
+    
+        if (user.userID.length < 4) {
+            return Alert.alert("아이디는 4글자 이상이어야합니다.")
+        }
+
+        Alert.alert(
+            '알림?',
+            '가입하시겠습니까?',
+            [
+                {
+                    text: '취소',
+                    onPress: () => { return },
+                    style: 'cancel',
+                },{
+                    text: 'OK', 
+                    onPress: async (): Promise<void> => { 
+                        const isRegistered: boolean = await register(user) 
+
+                        if (isRegistered) {
+                            navigation.push('Login')
+                        }
+                    },
+                }
+            ],
+        )
 	}
 
     const createChangeTextHadler = (text: string): ChangeTextHandler => (value: string): void => {
         setUser({ ...user, [text]: value})
     }
 
-    
     return (
         <KeyboardAvoidingView style={ styles.container }>
 			<SafeAreaView style={ styles.wrapper }>
@@ -47,11 +72,6 @@ function Register(): JSX.Element {
                     <Text style={ styles.inputTitle }>비밀번호</Text>
                     <TextInput style={ styles.input } placeholder="비밀번호를 입력하세요." ref={ passwordRef } returnKeyType="done" secureTextEntry
                         onChangeText={ createChangeTextHadler('userPW') } onSubmitEditing={(): void | null =>
-                            nameRef.current && nameRef.current.focus()
-                        }/>
-                    <Text style={ styles.inputTitle }>이름</Text>
-                    <TextInput style={ styles.input } placeholder="이름을 입력하세요." ref={ nameRef } returnKeyType="done" 
-                        onChangeText={ createChangeTextHadler('name') } onSubmitEditing={(): void | null =>
                             nicknameRef.current && nicknameRef.current.focus()
                         }/>
                     <Text style={ styles.inputTitle }>닉네임</Text>
@@ -59,12 +79,8 @@ function Register(): JSX.Element {
                         onChangeText={ createChangeTextHadler('nickname') } onSubmitEditing={(): void | null =>
                             emailRef.current && emailRef.current.focus()
                         }/>
-                    <Text style={ styles.inputTitle }>이메일</Text>
-                    <TextInput style={ styles.input } placeholder="이메일을 입력하세요. (선택)" ref={ emailRef } returnKeyType="done" 
-                        onChangeText={ createChangeTextHadler('email') } 
-                        />
 
-                    <Text style={ styles.inputTitle }>성별</Text>
+                    {/* <Text style={ styles.inputTitle }>성별</Text>
                     <RadioButton.Group onValueChange={newValue => setUser({ ...user, gender: newValue})} value={ user.gender ?? '' } >
                         <View style={ styles.radioContainer }>
                             <View style={ styles.radioButton }>
@@ -80,9 +96,9 @@ function Register(): JSX.Element {
                                 <RadioButton value="여자" />
                             </View>
                         </View>
-                    </RadioButton.Group>
+                    </RadioButton.Group> */}
 				</Pressable>
-                { loading ? (
+                { isLoading ? (
                     <View style={ styles.spinnerWrapper }>
                         <ActivityIndicator size={ 32 } color='#6200ee' />
                     </View>

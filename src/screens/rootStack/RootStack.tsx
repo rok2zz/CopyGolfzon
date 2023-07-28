@@ -1,6 +1,6 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack"
 import { RootStackNavigationProp, RootStackParamList } from "../../types/types"
-import { TouchableOpacity, StyleSheet } from "react-native"
+import { TouchableOpacity, Alert } from "react-native"
 import { useNavigation } from "@react-navigation/native"
 import MainTab from "./mainTab/MainTab"
 import NoticeTab from "./mainTab/screens/noticeTab/NoticeTab"
@@ -10,22 +10,57 @@ import Setting from "./screens/Setting"
 import DisclosureInfo from "./settings/DisclosureInfo"
 import Notice from "./webViews/Notice"
 import Event from "./webViews/Event"
-import useToken from "../../hooks/useToken"
+import { useRefreshToken, useToken } from "../../hooks/useToken"
 import AuthStack from "./authStack/AuthStack"
+import { useEffect, useState } from "react"
+import SplashScreen from 'react-native-splash-screen';
+import AsyncStorage from "@react-native-async-storage/async-storage"
+import { Token, UserInfo } from "../../lib/types"
+import useAuthActions from "../../hooks/useAuthActions"
 
 
 const Stack = createNativeStackNavigator<RootStackParamList>()
 
 function RootStack(): JSX.Element {
-	const token = useToken()
+    const { getNewAccessToken } = useToken()
+	const { authorize, getInfo } = useAuthActions()
 	const navigation = useNavigation<RootStackNavigationProp>()
+	const refreshToken = useRefreshToken()
+
+	useEffect((): void => {
+		async function autoLogin (): Promise<void> {
+			const accessToken = await getNewAccessToken()
+			if (accessToken !== '') {
+				
+				const rawToken = await AsyncStorage.getItem('token') ?? ''
+				const rawUserInfo = await AsyncStorage.getItem('userInfo') ?? ''
+                    
+				if (rawToken === '') {
+					return 
+				}
+				
+				const token: Token = JSON.parse(rawToken)
+				const userInfo: UserInfo = JSON.parse(rawUserInfo)
+
+				getInfo(userInfo)
+				authorize(token.refreshToken ?? '')
+    
+			}
+			
+			SplashScreen.hide()
+		}
+
+		autoLogin()
+	}, [])
+
+	
 	const onPress = (): void => {
 		navigation.goBack()
 	}
 
 	return (
 		<Stack.Navigator>
-			{ token ? ( <>
+			{ refreshToken ? ( <>
 				<Stack.Screen name='MainTab' component={ MainTab } options={{ headerShown: false }} />
 				<Stack.Screen name='ScreenLogin' component={ ScreenLogin } options={{ headerTitle: '스크린로그인', 
 					headerBackVisible: true, headerTitleStyle: { fontSize: 14, fontWeight: 'bold'},
@@ -68,11 +103,5 @@ function RootStack(): JSX.Element {
 		</Stack.Navigator>
 	)
 }
-
-const styles = StyleSheet.create({
-	header: {
-		fontSize: 11
-	}
-})
 
 export default RootStack

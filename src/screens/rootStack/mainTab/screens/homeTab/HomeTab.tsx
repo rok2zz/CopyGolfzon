@@ -15,7 +15,7 @@ function HomeTab(): JSX.Element {
     return (
         <>
         <Tab.Navigator screenOptions={{ tabBarItemStyle: { width: 'auto', height: 40 }, tabBarAndroidRipple: { borderless: false },
-            tabBarLabelStyle: { fontSize: 13, fontWeight: '900' }, tabBarIndicatorStyle: {  backgroundColor: 'black' }
+            tabBarLabelStyle: { fontSize: 13, fontWeight: '900' }, tabBarIndicatorStyle: { backgroundColor: 'black' }
             }} >
             <Tab.Screen name='Home' component={ Home } options={{ title: '홈' }}  />
             <Tab.Screen name='Screen' component={ Screen } options={{ title: '스크린' }} />

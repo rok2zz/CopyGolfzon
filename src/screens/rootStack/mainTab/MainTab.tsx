@@ -7,10 +7,10 @@ import HomeTabHeaderLeft from '../../../components/homeTabComponents/HomeTabHead
 import HomeTabHeaderRight from '../../../components/homeTabComponents/HomeTabHeaderRight';
 import MenuHeaderRight from '../../../components/MenuHeaderRight';
 import Menu from './screens/Menu';
-import MyPage from './screens/MyPage';
 import HomeTab from './screens/homeTab/HomeTab';
 import FeedTab from './screens/feedTab/FeedTab';
 import FriendTab from './screens/friendTab/FriendTab';
+import ProfileStack from './screens/profileStack/ProfileStack';
 
 const Tab = createBottomTabNavigator<MainTabParamList>()
 
@@ -32,7 +32,7 @@ function MainTab(): JSX.Element {
                     <Tab.Screen name='FeedTab' component={ FeedTab } options={{ tabBarLabel: '피드',
                         tabBarIcon: ({ color }): JSX.Element => <Icon name='dynamic-feed' size={ 24 } color={ color } />
                     }} />
-                    <Tab.Screen name='MyPage' component={ MyPage } options={{ tabBarLabel: 'MY',
+                    <Tab.Screen name='ProfileStack' component={ ProfileStack } options={{ tabBarLabel: 'MY',
                         tabBarIcon: ({ color }): JSX.Element => <Icon name='person' size={ 24 } color={ color } />
                     }} />
                     <Tab.Screen name='Menu' component={ Menu } options={{ tabBarLabel: '전체메뉴',

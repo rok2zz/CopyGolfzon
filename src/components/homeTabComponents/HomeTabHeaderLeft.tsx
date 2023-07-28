@@ -1,11 +1,13 @@
 import { StyleSheet, Text, View } from "react-native"
+import useUserInfo from "../../hooks/useUserInfo"
 
 
 function HomeTabHeaderLeft(): JSX.Element {
+    const nickname = useUserInfo().nick ?? ''
 
     return (
         <View style={ styles.container }> 
-            <Text> nick name </Text>
+            <Text>{ nickname }</Text>
         </View>
     )
 }

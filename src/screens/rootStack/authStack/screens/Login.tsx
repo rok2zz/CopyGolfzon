@@ -1,25 +1,26 @@
 import React, { useRef, useState } from "react"
-import { ActivityIndicator, Keyboard, KeyboardAvoidingView, Pressable, SafeAreaView, StyleSheet, Text, View } from "react-native"
-import { getLoginToken } from "../../../../lib/users"
+import { ActivityIndicator, Alert, Keyboard, KeyboardAvoidingView, Pressable, SafeAreaView, StyleSheet, Text, View } from "react-native"
 import { TextInput } from "react-native"
 import { useNavigation } from "@react-navigation/native"
 import { AuthStackNavigationProp } from "../../../../types/types"
+import { useUsers } from "../../../../hooks/useUsers"
 
 function Login(): JSX.Element {
 	const passwordRef = useRef<TextInput>(null)
     const navigation = useNavigation<AuthStackNavigationProp>()
     const [userID, setUserID] = useState<string>('')
     const [userPW, setUserPW] = useState<string>('')
-    const [loading, setLoading] = useState(false)
+    const { isLoading, login } = useUsers()
 
-	const onPressLogin = (): void => {
+	const onPressLogin = async (): Promise<void> => {
         Keyboard.dismiss()
 
-		setLoading(true)
-
-        getLoginToken(userID, userPW)
-
-		setLoading(false)
+        if (userID == "" || userPW == "") {
+            Alert.alert('알림', '아이디, 비밀번호를 입력해주세요.')
+            return
+        }
+            
+        await login(userID, userPW)
 	}
 
     const onPress = (): void => {
@@ -39,7 +40,7 @@ function Login(): JSX.Element {
                     <TextInput style={ styles.input } placeholder="비밀번호를 입력하세요." ref={ passwordRef } returnKeyType="done" secureTextEntry
                         onChangeText={(userPW): void => setUserPW(userPW)} onSubmitEditing={ (): void => { onPressLogin } } />
 				</View>
-                { loading ? (
+                { isLoading ? (
                     <View style={ styles.spinnerWrapper }>
                         <ActivityIndicator size={ 32 } color='#6200ee' />
                     </View>

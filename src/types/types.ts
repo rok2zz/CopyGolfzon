@@ -23,8 +23,8 @@ export type RootStackParamList = {
 }
 
 export type RootStackNavigationProp = NativeStackNavigationProp<RootStackParamList>
-export type NoticeStackProps = NativeStackScreenProps<RootStackParamList, 'Notice'>;
-export type EventStackProps = NativeStackScreenProps<RootStackParamList, 'Event'>;
+export type NoticeStackProp = NativeStackScreenProps<RootStackParamList, 'Notice'>;
+export type EventStackProp = NativeStackScreenProps<RootStackParamList, 'Event'>;
 
 // AuthStack
 
@@ -41,12 +41,12 @@ export type MainTabParamList = {
     HomeTab: undefined,
 	FriendTab: undefined,
 	FeedTab: undefined,
-	MyPage: undefined,
-	Menu: undefined,
+	ProfileStack: undefined,
+	Menu: undefined
 }
 
 export type MainTabNavigationScreenParams = NavigatorScreenParams<MainTabParamList>
-export type MainTabNavigationProps = CompositeNavigationProp<RootStackNavigationProp, BottomTabNavigationProp<MainTabParamList>>
+export type MainTabNavigationProp = CompositeNavigationProp<RootStackNavigationProp, BottomTabNavigationProp<MainTabParamList>>
 export type MainTabRouteProp = RouteProp<RootStackParamList, 'MainTab'>
 
 // NoticeTab
@@ -80,7 +80,13 @@ export type FeedTabParamList = {
 	Feed: undefined
 }
 
-// MyPageTab
+// ProfileStack
 
+export type ProfileStackParamList = {
+	MyProfile: undefined,
+	ModifyProfile: undefined
+}
 
+export type ProfileStackNavigationScreenParams = NavigatorScreenParams<ProfileStackParamList>
+export type ProfileStackNavigationProp = NativeStackNavigationProp<ProfileStackParamList>
 // MenuTab
